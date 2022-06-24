@@ -1,0 +1,576 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""유저 Entity"""
+type UserEntity {
+  id: ID!
+
+  """이름"""
+  name: String!
+
+  """이메일"""
+  email: String!
+
+  """포인트"""
+  point: Int!
+}
+
+"""결과 메세지"""
+type ResultMessage {
+  """대상 ID"""
+  id: String
+
+  """상태 코드"""
+  status: Int!
+
+  """Message"""
+  msg: String!
+
+  """성공 여부"""
+  isSuccess: Boolean!
+}
+
+"""저자 Entity"""
+type AuthorEntity {
+  id: ID!
+
+  """저자 이름"""
+  name: String!
+
+  """저자 설명"""
+  description: String!
+}
+
+"""출판사 Entity"""
+type PublisherEntity {
+  id: ID!
+
+  """이름"""
+  name: String!
+
+  """설명"""
+  description: String!
+}
+
+"""FileUpload Entity"""
+type FileEntity {
+  id: ID!
+
+  """이름"""
+  name: String!
+
+  """폴더"""
+  path: String!
+
+  """URL"""
+  url: String!
+  bookImage: BookImageEntity
+}
+
+"""책 이미지 Entity"""
+type BookImageEntity {
+  id: ID!
+
+  """메인 이미지 여부"""
+  isMain: Boolean!
+
+  """업로드된 이미지 ID"""
+  file: FileEntity!
+  book: BookEntity!
+}
+
+"""책 Entity"""
+type BookEntity {
+  id: ID!
+
+  """제목"""
+  title: String!
+
+  """소제목"""
+  subtitle: String!
+
+  """설명"""
+  description: String!
+
+  """페이지 수"""
+  page: Int!
+
+  """10자리 ISBN"""
+  isbn_10: String!
+
+  """13자리 ISBN"""
+  isbn_13: String!
+
+  """출간일"""
+  publishAt: DateTime!
+  publisher: PublisherEntity!
+  author: AuthorEntity!
+  book_images: [BookImageEntity!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""상품 태그 Entity"""
+type ProductTagEntity {
+  id: ID!
+
+  """이름"""
+  name: String!
+  products: [ProductEntity!]!
+}
+
+"""상품 분류 Entity"""
+type ProductCategoryEntity {
+  id: ID!
+
+  """분류 이름"""
+  name: String!
+
+  """하위 분류"""
+  children: [ProductCategoryEntity!]
+}
+
+"""상품 Entity"""
+type ProductEntity {
+  id: ID!
+
+  """상품 이름"""
+  name: String!
+
+  """상품 URL"""
+  url: String!
+
+  """재고 개수"""
+  stock_count: Int!
+
+  """판매 개수"""
+  selling_count: Int!
+
+  """가격"""
+  price: Int!
+  book: BookEntity!
+  productCategory: ProductCategoryEntity
+  productTags: [ProductTagEntity!]!
+}
+
+"""리뷰 Entity"""
+type ReviewEntity {
+  id: ID!
+
+  """내용"""
+  contents: String!
+
+  """평점"""
+  star: Float!
+
+  """좋아요"""
+  like: Boolean!
+  product: ProductEntity!
+  user: UserEntity!
+}
+
+"""결제 Entity"""
+type PaymentEntity {
+  id: ID!
+  impUid: String!
+  merchantUid: String!
+
+  """결제 금액"""
+  amount: Int!
+
+  """결제 상태"""
+  status: PAYMENT_STATUS!
+  user: UserEntity!
+  product: ProductEntity!
+}
+
+enum PAYMENT_STATUS {
+  PAID
+  CANCELLED
+}
+
+type Query {
+  """회원 단일 조회, Bearer JWT"""
+  fetchLoginUser: UserEntity
+
+  """리뷰 전체 조회"""
+  fetchReviews: [ReviewEntity!]!
+
+  """리뷰 단일 조회"""
+  fetchReview(reviewID: String!): ReviewEntity!
+
+  """상품 검색"""
+  fetchProducts(search: String!): [ProductEntity!]!
+
+  """단일 상품 조회"""
+  fetchProduct(productID: String!): ProductEntity
+
+  """모든 책 조회"""
+  fetchBooks: [BookEntity!]!
+
+  """단일 책 조회"""
+  fetchBook(bookID: String!): BookEntity!
+
+  """저자 정보 단일 조회"""
+  fetchAuthor(authorID: String!): AuthorEntity!
+
+  """출판사 정보 조회"""
+  fetchPublisher(publisherID: String!): PublisherEntity!
+
+  """모든 분류 정보 조회"""
+  fetchCategorysByTree: [ProductCategoryEntity!]!
+
+  """단일 분류 정보 조회"""
+  fetchCategoryByTree(categoryID: String!): ProductCategoryEntity!
+}
+
+type Mutation {
+  """AccessToken 재발급"""
+  restoreToken: String!
+
+  """로그인, Get AccessToken"""
+  Login(loginInput: LoginInput!): String!
+
+  """로그아웃, Bearer JWT"""
+  Logout: ResultMessage!
+
+  """회원가입"""
+  createUser(createUserInput: CreateUserInput!): UserEntity!
+
+  """비밀번호 변경, Bearer JWT"""
+  updateUserPwd(pwd: String!): ResultMessage!
+
+  """회원 정보 수정, Bearer JWT"""
+  updateLoginUser(updateInput: UpdateUserInput!): UserEntity!
+
+  """회원 탈퇴 ( Soft ), Bearer JWT"""
+  deleteLoginUser: ResultMessage!
+
+  """리뷰 생성"""
+  createReview(createReviewInput: CreateReviewInput!): ReviewEntity!
+
+  """리뷰 수정"""
+  updateReview(reviewID: String!, updateReviewInput: UpdateReviewInput!): ReviewEntity!
+
+  """리뷰 삭제 취소"""
+  restoreReview(reviewID: String!): ResultMessage!
+
+  """리뷰 삭제 ( Real )"""
+  deleteReview(reviewID: String!): ResultMessage!
+
+  """리뷰 삭제 ( Soft )"""
+  softDeleteReview(reviewID: String!): ResultMessage!
+
+  """결제 정보 생성"""
+  createPayment(createPaymentInput: CreatePaymentInput!): PaymentEntity!
+
+  """결제 전부 취소"""
+  cancelPayment(cancelPaymentInput: CancelPaymentInput!): PaymentEntity!
+
+  """상품 정보 생성"""
+  createProduct(createProductInput: CreateProductInput!): ProductEntity!
+
+  """상품 정보 수정"""
+  updateProduct(productID: String!, updateProductInput: UpdateProductInput!): ProductEntity!
+
+  """상품 정보 삭제 취소"""
+  restoreProduct(productID: String!): ResultMessage!
+
+  """모든 상품 삭제 ( Soft )"""
+  softDeleteProductAll: ResultMessage!
+
+  """단일 상품 삭제 ( Soft )"""
+  softDeleteProduct(productID: String!): ResultMessage!
+
+  """책 정보 생성"""
+  createBook(createBookInput: CreateBookInput!, files: [Upload!]!): BookEntity!
+
+  """책 정보 수정"""
+  updateBook(bookID: String!, updateBookInput: UpdateBookInput!, files: [Upload!]!): BookEntity!
+
+  """책 정보 삭제 취소"""
+  restoreBook(bookID: String!): ResultMessage!
+
+  """단일 책 삭제 ( Soft )"""
+  softDeleteBook(bookID: String!): ResultMessage!
+
+  """단일 책 삭제 ( Real )"""
+  deleteImage(bookID: String!): ResultMessage!
+
+  """저자 정보 생성"""
+  createAuthor(createAuthorInput: CreateAuthorInput!): AuthorEntity!
+
+  """저자 정보 수정"""
+  updateAuthor(authorID: String!, updateAuthorInput: UpdateAuthorInput!): AuthorEntity!
+
+  """저자 정보 삭제 취소"""
+  restoreAuthor(authorID: String!): ResultMessage!
+
+  """저자 정보 삭제 ( Real )"""
+  deleteAuthor(authorID: String!): ResultMessage!
+
+  """저자 정보 삭제 ( Soft )"""
+  softDeleteAuthor(authorID: String!): ResultMessage!
+
+  """출판사 정보 생성"""
+  createPubliser(createPublisherInput: CreatePublisherInput!): PublisherEntity!
+
+  """출판사 정보 수정"""
+  updatePublisher(publisherID: String!, updatePublisherInput: UpdatePublisherInput!): PublisherEntity!
+
+  """출판사 정보 삭제 취소"""
+  restorePublisher(publisherID: String!): ResultMessage!
+
+  """출판사 정보 삭제 ( Real )"""
+  deletePublisher(publisherID: String!): ResultMessage!
+
+  """출판사 정보 삭제 ( Soft )"""
+  softDeletePublisher(publisherID: String!): ResultMessage!
+
+  """FileUpload"""
+  uploadFile(files: [Upload!]!): [FileEntity!]!
+
+  """FileUpload 삭제 ( Real )"""
+  deleteFileUpload(fileIDs: [String!]!): [ResultMessage!]!
+
+  """분류 생성"""
+  createCategory(createProductCategoryInput: CreateProductCategoryInput!): ProductCategoryEntity!
+
+  """분류 단일 삭제"""
+  deleteCategory(categoryID: String!): ResultMessage!
+
+  """분류 전체 삭제"""
+  deleteCategoryAll: ResultMessage!
+}
+
+input LoginInput {
+  """이메일"""
+  email: String!
+
+  """비밀번호"""
+  pwd: String!
+}
+
+input CreateUserInput {
+  """이름"""
+  name: String!
+
+  """이메일"""
+  email: String!
+
+  """비밀번호"""
+  pwd: String!
+}
+
+input UpdateUserInput {
+  """이름"""
+  name: String
+
+  """이메일"""
+  email: String
+}
+
+input CreateReviewInput {
+  """내용"""
+  contents: String!
+
+  """평점"""
+  star: Float!
+
+  """좋아요"""
+  like: Boolean!
+
+  """회원 ID"""
+  userID: String!
+
+  """상품 ID"""
+  productID: String!
+}
+
+input UpdateReviewInput {
+  """내용"""
+  contents: String
+
+  """평점"""
+  star: Float
+
+  """좋아요"""
+  like: Boolean
+
+  """회원 ID"""
+  userID: String
+
+  """상품 ID"""
+  productID: String
+}
+
+input CreatePaymentInput {
+  impUid: String!
+  merchantUid: String!
+
+  """결제 금액"""
+  amount: Int!
+
+  """결제 상태"""
+  status: PAYMENT_STATUS!
+
+  """상품 ID"""
+  productID: String!
+}
+
+input CancelPaymentInput {
+  impUid: String!
+  merchantUid: String!
+}
+
+input CreateProductInput {
+  """상품 이름"""
+  name: String!
+
+  """상품 URL"""
+  url: String!
+
+  """재고 개수"""
+  stock_count: Int!
+
+  """가격"""
+  price: Int!
+
+  """책 ID"""
+  bookID: String!
+
+  """카테고리 ID"""
+  categoryID: String!
+
+  """태그 목록 ( #몽환적인 )"""
+  productTags: [String!]!
+}
+
+input UpdateProductInput {
+  """상품 이름"""
+  name: String
+
+  """상품 URL"""
+  url: String
+
+  """재고 개수"""
+  stock_count: Int
+
+  """가격"""
+  price: Int
+
+  """책 ID"""
+  bookID: String
+
+  """카테고리 ID"""
+  categoryID: String
+
+  """태그 목록 ( #몽환적인 )"""
+  productTags: [String!]
+}
+
+input CreateBookInput {
+  """제목"""
+  title: String!
+
+  """소제목"""
+  subtitle: String!
+
+  """설명"""
+  description: String!
+
+  """페이지 수"""
+  page: Int!
+
+  """10자리 ISBN"""
+  isbn_10: String!
+
+  """13자리 ISBN"""
+  isbn_13: String!
+
+  """출간일"""
+  publishAt: DateTime!
+
+  """출판사 ID"""
+  publisherId: String!
+
+  """저자 ID"""
+  authorId: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UpdateBookInput {
+  """제목"""
+  title: String
+
+  """소제목"""
+  subtitle: String
+
+  """설명"""
+  description: String
+
+  """페이지 수"""
+  page: Int
+
+  """10자리 ISBN"""
+  isbn_10: String
+
+  """13자리 ISBN"""
+  isbn_13: String
+
+  """출간일"""
+  publishAt: DateTime
+
+  """출판사 ID"""
+  publisherId: String
+
+  """저자 ID"""
+  authorId: String
+  isChange: Boolean = false
+}
+
+input CreateAuthorInput {
+  """저자 이름"""
+  name: String!
+
+  """저자 설명"""
+  description: String!
+}
+
+input UpdateAuthorInput {
+  """저자 이름"""
+  name: String
+
+  """저자 설명"""
+  description: String
+}
+
+input CreatePublisherInput {
+  """이름"""
+  name: String!
+
+  """설명"""
+  description: String!
+}
+
+input UpdatePublisherInput {
+  """이름"""
+  name: String
+
+  """설명"""
+  description: String
+}
+
+input CreateProductCategoryInput {
+  """분류 이름"""
+  name: String!
+
+  """상위 분류 ID"""
+  parentID: ID
+}
