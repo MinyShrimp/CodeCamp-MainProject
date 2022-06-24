@@ -72,6 +72,11 @@
     --bs-body-bg: #fff;
 }
 
+@font-face {
+    font-family: 'SCDream';
+    src: url('./assets/font/SCDream4.otf');
+}
+
 *,
 *::before,
 *::after {

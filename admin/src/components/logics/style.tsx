@@ -2,7 +2,7 @@ import { Card } from '@material-ui/core';
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    background: var(--bs-info);
+    background: #9beffe;
     height: calc(100vh - 210px);
     display: flex;
     justify-content: center;
@@ -20,7 +20,7 @@ export const Label = styled.label`
 
 export const CardStyle = styled(Card)`
     width: 600px;
-    height: 500px;
+    height: auto;
     padding: 3rem;
 `;
 
@@ -34,4 +34,11 @@ export const CardBody = styled.div`
 export const CardFooter = styled.div`
     display: flex;
     justify-content: flex-end;
+`;
+
+export const Subtitle = styled.p`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.2em;
 `;

@@ -1,11 +1,27 @@
 import { sendGraphQL } from '../sendGraphQL';
 import { LogicHeader } from '../header';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
+import { CardStyle, Container } from '../style';
+import { AttachMoney, Email, Forward } from '@material-ui/icons';
+import { Subtitle } from '../style';
+
+interface IUserInfo {
+    id: string;
+    email: string;
+    name: string;
+    point: number;
+}
 
 export function LogicLogoutIndex() {
     const navi = useNavigate();
+    const [info, setInfo] = useState<IUserInfo>({
+        id: '',
+        email: '',
+        name: '',
+        point: 0,
+    });
 
     const submit = async () => {
         const token = localStorage.getItem('access_token');
@@ -41,7 +57,7 @@ export function LogicLogoutIndex() {
         });
 
         if (data) {
-            console.log(data.fetchLoginUser);
+            setInfo(data.fetchLoginUser);
         } else {
         }
     };
@@ -53,9 +69,56 @@ export function LogicLogoutIndex() {
     return (
         <>
             <LogicHeader entityName="Logout" />
-            <div>
-                <Button onClick={submit}>Logout</Button>
-            </div>
+            <Container style={{ fontFamily: 'SCDream !important' }}>
+                <CardStyle
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <div>
+                        <h3>{info.name}</h3>
+                        <Subtitle>
+                            <Forward
+                                style={{ marginRight: '0.5rem' }}
+                                fontSize="small"
+                            />{' '}
+                            {info.id}
+                        </Subtitle>
+                        <Subtitle>
+                            <Email
+                                style={{ marginRight: '0.5rem' }}
+                                fontSize="small"
+                            />{' '}
+                            {info.email}
+                        </Subtitle>
+                        <Subtitle>
+                            <AttachMoney
+                                style={{ marginRight: '0.5rem' }}
+                                fontSize="small"
+                            />{' '}
+                            {info.point}
+                        </Subtitle>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-end',
+                            height: '120px',
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={submit}
+                        >
+                            Logout
+                        </Button>
+                    </div>
+                </CardStyle>
+            </Container>
         </>
     );
 }

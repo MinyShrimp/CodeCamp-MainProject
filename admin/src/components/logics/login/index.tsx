@@ -11,7 +11,7 @@ import {
     Container,
     InputGroup,
     Label,
-} from './style';
+} from '../style';
 import { sendGraphQL } from '../sendGraphQL';
 import { useNavigate } from 'react-router-dom';
 
