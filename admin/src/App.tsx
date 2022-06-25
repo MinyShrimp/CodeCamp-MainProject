@@ -4,6 +4,7 @@ import { Index } from './components/index/index';
 import { LoginPage } from './components/login/index';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { Page404 } from './components/pages/404';
+import { AuthIndex } from './components/auth';
 
 function App() {
     const navigate = useNavigate();
@@ -22,7 +23,8 @@ function App() {
                     hashSync(admin.pwd, genSaltSync()),
                 );
                 const pathname =
-                    window.location.pathname === '/admin/login'
+                    window.location.pathname === '/admin/login' ||
+                    window.location.pathname === '/'
                         ? '/admin'
                         : window.location.pathname;
                 navigate(pathname, { replace: true });
@@ -35,6 +37,7 @@ function App() {
     return (
         <div className="App" style={{ height: '100vh' }}>
             <Routes>
+                <Route path="/auth/email" element={<AuthIndex />}></Route>
                 <Route path="/admin/login" element={<LoginPage />}></Route>
                 <Route path="/admin/*" element={<Index />}></Route>
                 <Route path="*" element={<Page404 />}></Route>

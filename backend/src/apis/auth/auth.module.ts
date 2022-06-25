@@ -11,6 +11,8 @@ import { OAuthNaverStrategy } from '../../commons/auth/oauth-naver.strategy';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserModule } from '../user/user.module';
 
+import { EmailEntity } from '../email/entities/email.entity';
+
 import { AuthController } from './auth.controller';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
@@ -19,6 +21,7 @@ import { AuthService } from './auth.service';
     imports: [
         TypeOrmModule.forFeature([
             UserEntity, //
+            EmailEntity,
         ]),
         JwtModule.register({}),
         UserModule,
@@ -30,6 +33,7 @@ import { AuthService } from './auth.service';
         OAuthNaverStrategy,
         JwtRefreshStrategy,
         JwtAccessStrategy,
+
         AuthResolver,
         AuthService,
     ],

@@ -11,13 +11,18 @@ import { UpdateUserInput } from './dto/updateUser.input';
 import { UserEntity } from './entities/user.entity';
 import { UserService } from './user.service';
 import { CreateUserInput } from './dto/createUser.input';
+import { UserRepository } from './entities/user.repository';
 
 /* 유저 API */
 @Resolver()
 export class UserResolver {
     constructor(
+        private readonly userRepository: UserRepository, //
         private readonly userService: UserService, //
     ) {}
+
+    ///////////////////////////////////////////////////////////////////
+    // Util //
 
     ///////////////////////////////////////////////////////////////////
     // 조회 //
@@ -35,7 +40,7 @@ export class UserResolver {
     fetchLoginUser(
         @CurrentUser() currentUser: IPayload, //
     ): Promise<UserEntity> {
-        return this.userService.findOneByID(currentUser.id);
+        return this.userRepository.findOneByID(currentUser.id);
     }
 
     ///////////////////////////////////////////////////////////////////

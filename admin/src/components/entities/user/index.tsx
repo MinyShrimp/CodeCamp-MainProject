@@ -8,7 +8,7 @@ export const UserIndex = EntityFactory.getEntity<IUserColumn>({
     dummyData: DummyUserColumn,
     list: {
         column: [
-            'id', 'name', 'email', 'point',
+            'id', 'name', 'email', 'phone', 'point',
             'loginAt', 'logoutAt', 'isLogin',
             'createAt', 'updateAt', 'deleteAt'
         ],
@@ -16,7 +16,7 @@ export const UserIndex = EntityFactory.getEntity<IUserColumn>({
     },
     show: {
         column: [
-            'id', 'name', 'email', 
+            'id', 'name', 'email', 'phone',
             'pwd', 'point', 'isAdmin', 
             'loginAt', 'logoutAt', 'isLogin',
             'createAt', 'updateAt', 'deleteAt',

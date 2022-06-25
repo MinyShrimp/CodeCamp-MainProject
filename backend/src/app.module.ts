@@ -19,6 +19,8 @@ import { ConfigModule } from '@nestjs/config';
 // Modules //
 import { AuthModule } from './apis/auth/auth.module';
 import { UserModule } from './apis/user/user.module';
+import { PhoneModule } from './apis/phone/phone.module';
+import { EmailModule } from './apis/email/email.module';
 
 import { ReviewModule } from './apis/review/review.module';
 import { PaymentModule } from './apis/payment/payment.module';
@@ -93,6 +95,8 @@ import { FileUploadModule } from './apis/fileUpload/fileUpload.module';
         // Modules //
         AuthModule,
         UserModule,
+        PhoneModule,
+        EmailModule,
 
         ReviewModule,
         PaymentModule,

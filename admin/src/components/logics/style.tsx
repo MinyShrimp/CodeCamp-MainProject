@@ -1,4 +1,4 @@
-import { Card } from '@material-ui/core';
+import { Card, Input } from '@material-ui/core';
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -11,6 +11,17 @@ export const Container = styled.div`
 
 export const InputGroup = styled.div`
     margin-bottom: 2rem;
+`;
+
+export const InputItemBetween = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+`;
+
+export const InputNumber = styled(Input)`
+    width: 100%;
+    margin-right: 1rem;
 `;
 
 export const Label = styled.label`
@@ -41,4 +52,14 @@ export const Subtitle = styled.p`
     flex-direction: row;
     align-items: center;
     margin-bottom: 0.2em;
+`;
+
+export const Timer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+
+    color: blue;
 `;

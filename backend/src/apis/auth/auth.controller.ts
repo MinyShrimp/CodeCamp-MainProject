@@ -7,6 +7,7 @@ import { IUser } from '../../commons/interfaces/User.interface';
 
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
+import { UserRepository } from '../user/entities/user.repository';
 
 interface IOAuthRequest extends Request {
     user: IUser;
@@ -14,10 +15,10 @@ interface IOAuthRequest extends Request {
 
 @Controller()
 export class AuthController {
-    private readonly REDIRECT =
-        'http://localhost:5500/frontend/login/index.html';
+    private readonly REDIRECT = 'http://localhost:8081/admin';
 
     constructor(
+        private readonly userRepository: UserRepository,
         private readonly authService: AuthService, //
         private readonly userService: UserService,
     ) {}
@@ -32,7 +33,7 @@ export class AuthController {
         res: Response,
     ): Promise<void> {
         // 1. 가입 확인
-        let user = await this.userService.findOneByEmail(userInfo.email);
+        let user = await this.userRepository.findOneByEmail(userInfo.email);
 
         // 1-1. 이미 가입되어 있으면 통과
         // 1-2. 가입이 안되어 있으면 회원가입
@@ -41,6 +42,7 @@ export class AuthController {
                 email: userInfo.email,
                 name: userInfo.name,
                 pwd: randomUUID(), // DB에 저장하는 비밀번호를 랜덤한 uuid로 저장한다
+                phone: '',
             });
         }
 

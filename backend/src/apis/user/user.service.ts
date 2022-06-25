@@ -1,23 +1,34 @@
 import * as bcrypt from 'bcryptjs';
-import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import {
+    CACHE_MANAGER,
+    ConflictException,
+    Inject,
+    Injectable,
+} from '@nestjs/common';
+import { Cache } from 'cache-manager';
 
 import { ResultMessage } from '../../commons/message/ResultMessage.dto';
 import { MESSAGES } from '../../commons/message/Message.enum';
 
+import { PhoneService } from '../phone/phone.service';
+import { EmailService } from '../email/email.service';
+
+import { CreateUserInput } from './dto/createUser.input';
 import { UpdateUserInput } from './dto/updateUser.input';
 
 import { UserEntity } from './entities/user.entity';
-import { CreateUserInput } from './dto/createUser.input';
+import { UserRepository } from './entities/user.repository';
 import { UserCheckService } from './userCheck.service';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>, //
+        @Inject(CACHE_MANAGER)
+        private readonly cacheManage: Cache,
+        private readonly userRepository: UserRepository, //
         private readonly userCheckService: UserCheckService,
+        private readonly phoneService: PhoneService,
+        private readonly emailService: EmailService,
     ) {}
 
     ///////////////////////////////////////////////////////////////////
@@ -37,77 +48,6 @@ export class UserService {
     ///////////////////////////////////////////////////////////////////
     // 조회 //
 
-    /**
-     * 전체 조회
-     * @returns 조회된 회원 정보 목록
-     */
-    async findAll(): Promise<UserEntity[]> {
-        return await this.userRepository.find({});
-    }
-
-    /**
-     * 삭제 포함 전체 조회
-     * @returns 조회된 회원 정보 목록
-     */
-    async findAllWithDeleted(): Promise<UserEntity[]> {
-        return await this.userRepository.find({
-            withDeleted: true,
-        });
-    }
-
-    /**
-     * ID 기반 회원 조회
-     * @param userID
-     * @returns 회원 정보
-     */
-    async findOneByID(
-        userID: string, //
-    ): Promise<UserEntity> {
-        return await this.userRepository.findOne({
-            where: { id: userID },
-        });
-    }
-
-    /**
-     * 삭제 포함 ID 기반 회원 조회
-     * @param userID
-     * @returns 회원 정보
-     */
-    async findOneByIDWithDeleted(
-        userID: string, //
-    ): Promise<UserEntity> {
-        return await this.userRepository.findOne({
-            where: { id: userID },
-            withDeleted: true,
-        });
-    }
-
-    /**
-     * Email 기반 회원 조회
-     * @param email
-     * @returns 회원 정보
-     */
-    async findOneByEmail(
-        email: string, //
-    ): Promise<UserEntity> {
-        return await this.userRepository.findOne({
-            where: { email: email },
-        });
-    }
-
-    /**
-     * 삭제포함 Email 기반 회원 조회
-     * @param email
-     * @returns 회원 정보
-     */
-    async findOneByEmailWithDeleted(
-        email: string, //
-    ): Promise<UserEntity> {
-        return await this.userRepository.findOne({
-            where: { email: email },
-        });
-    }
-
     ///////////////////////////////////////////////////////////////////
     // 생성 //
 
@@ -122,16 +62,30 @@ export class UserService {
         input: CreateUserInput, //
     ): Promise<UserEntity> {
         // 검색
-        const user = await this.findOneByEmail(input.email);
+        const user = await this.userRepository.findOneByEmail(input.email);
 
         // 이메일 중복 체크
         this.userCheckService.checkOverlapEmail(user);
 
-        // 비밀번호 해싱
-        return await this.userRepository.save({
+        // 핸드폰 인증 체크
+        const phoneAuth = await this.phoneService.create(input.phone);
+
+        // 이메일 인증 보내기
+        const token = this.createPassword(input.email);
+        const emailAuth = await this.emailService.SendAuthEmail({
+            email: input.email,
+            token: token,
+        });
+
+        // 비밀번호 해싱 후 생성
+        const result = await this.userRepository.save({
             ...input,
             pwd: this.createPassword(input.pwd),
+            phoneAuth: phoneAuth,
+            emailAuth: emailAuth,
         });
+
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -148,17 +102,13 @@ export class UserService {
         pwd: string,
     ): Promise<ResultMessage> {
         // 검색
-        await this.findOneByID(userID);
+        await this.userRepository.findOneByID(userID);
 
         // 비밀번호 변경
         // + 로그아웃
-        const result = await this.userRepository.update(
-            { id: userID },
-            {
-                pwd: this.createPassword(pwd),
-                logoutAt: new Date(),
-                isLogin: false,
-            },
+        const result = await this.userRepository.updatePwd(
+            userID,
+            this.createPassword(pwd),
         );
         const isSuccess = result.affected ? true : false;
 
@@ -183,10 +133,10 @@ export class UserService {
         updateInput: UpdateUserInput,
     ): Promise<UserEntity> {
         // 검색
-        const user = await this.findOneByID(userID);
+        const user = await this.userRepository.findOneByID(userID);
 
         // 존재 여부 확인
-        await this.userCheckService.checkValidUser(user);
+        this.userCheckService.checkValidUser(user);
 
         // 수정
         return await this.userRepository.save({
@@ -203,9 +153,7 @@ export class UserService {
     async restore(
         userID: string, //
     ): Promise<ResultMessage> {
-        const result = await this.userRepository.restore({
-            id: userID,
-        });
+        const result = await this.userRepository.restore(userID);
         const isSuccess = result.affected ? true : false;
 
         return new ResultMessage({
@@ -221,27 +169,6 @@ export class UserService {
     // 삭제 //
 
     /**
-     * 회원 삭제 ( Real )
-     * @param userID
-     * @returns ResultMessage
-     */
-    async delete(
-        userID: string, //
-    ): Promise<ResultMessage> {
-        const result = await this.userRepository.delete({
-            id: userID,
-        });
-
-        return new ResultMessage({
-            id: userID,
-            isSuccess: result.affected ? true : false,
-            contents: result.affected
-                ? MESSAGES.USER_DELETE_SUCCESSED
-                : MESSAGES.USER_DELETE_FAILED,
-        });
-    }
-
-    /**
      * 회원 삭제 ( Soft )
      * @param userID
      * @returns ResultMessage
@@ -249,10 +176,7 @@ export class UserService {
     async softDelete(
         userID: string, //
     ): Promise<ResultMessage> {
-        const result = await this.userRepository.update(
-            { id: userID },
-            { deleteAt: new Date(), isLogin: false, logoutAt: new Date() },
-        );
+        const result = await this.userRepository.softDelete(userID);
 
         return new ResultMessage({
             id: userID,
