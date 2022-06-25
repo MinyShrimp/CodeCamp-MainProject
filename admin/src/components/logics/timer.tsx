@@ -53,7 +53,9 @@ export function TimerComponent(props: {
     }, [props.isAuthOK]);
 
     return (
-        <Timer>
+        <Timer
+            style={{ color: !props.isAuthOK && props.isSend ? 'blue' : 'gray' }}
+        >
             {min}:{sec}
         </Timer>
     );
