@@ -1,35 +1,24 @@
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import {
-    ConflictException,
-    Injectable,
-    CACHE_MANAGER,
-    Inject,
-} from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { ConflictException, Injectable } from '@nestjs/common';
 
 import { IPayloadSub } from '../../commons/interfaces/Payload.interface';
 import { ResultMessage } from '../../commons/message/ResultMessage.dto';
 import { MESSAGES } from '../../commons/message/Message.enum';
 
 import { UserEntity } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
 import { UserCheckService } from '../user/userCheck.service';
 
-import { LoginInput } from './dto/Login.input';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LoginInput } from './dto/login.input';
+import { UserRepository } from '../user/entities/user.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>,
-
-        private readonly userCheckService: UserCheckService,
-        private readonly userSerivce: UserService,
         private readonly jwtService: JwtService,
+        private readonly userRepository: UserRepository,
+        private readonly userCheckService: UserCheckService,
     ) {}
 
     ///////////////////////////////////////////////////////////////////
@@ -132,7 +121,7 @@ export class AuthService {
     async restoreToken(
         userID: string, //
     ) {
-        const user = await this.userSerivce.findOneByID(userID);
+        const user = await this.userRepository.findOneByID(userID);
         return this.getAccessToken(user);
     }
 
@@ -150,7 +139,7 @@ export class AuthService {
         input: LoginInput, //
     ): Promise<string> {
         // 검색
-        const user = await this.userSerivce.findOneByEmail(input.email);
+        const user = await this.userRepository.findOneByEmail(input.email);
 
         // 존재 여부 검사
         this.userCheckService.checkValidUser(user);
@@ -165,11 +154,7 @@ export class AuthService {
         this.comparePassword(input.pwd, user.pwd);
 
         // 로그인 성공
-        await this.userRepository.save({
-            ...user,
-            loginAt: new Date().toUTCString(),
-            isLogin: true,
-        });
+        await this.userRepository.login(user.id);
 
         // jwt 생성
         const access_token = this.getAccessToken(user);
@@ -187,7 +172,7 @@ export class AuthService {
         userID: string, //
     ): Promise<ResultMessage> {
         // 검색
-        const user = await this.userSerivce.findOneByID(userID);
+        const user = await this.userRepository.findOneByID(userID);
 
         // 존재 여부 검사
         this.userCheckService.checkValidUser(user);
@@ -196,13 +181,7 @@ export class AuthService {
         this.userCheckService.checkLogout(user);
 
         // 로그아웃 시도
-        const result = await this.userRepository.update(
-            { id: userID },
-            {
-                logoutAt: new Date().toUTCString(),
-                isLogin: false,
-            },
-        );
+        const result = await this.userRepository.logout(userID);
         const isSuccess = result.affected ? true : false;
 
         context.res.setHeader('Set-Cookie', `refreshToken=; path=/;`);

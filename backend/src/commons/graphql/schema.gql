@@ -12,6 +12,9 @@ type UserEntity {
   """이메일"""
   email: String!
 
+  """핸드폰 번호"""
+  phone: String!
+
   """포인트"""
   point: Int!
 }
@@ -197,6 +200,12 @@ type Query {
   """회원 단일 조회, Bearer JWT"""
   fetchLoginUser: UserEntity
 
+  """핸드폰 인증"""
+  SendPhone(phone: String!): String!
+
+  """핸드폰 인증 확인"""
+  AuthPhoneOK(phoneInput: PhoneInput!): String!
+
   """리뷰 전체 조회"""
   fetchReviews: [ReviewEntity!]!
 
@@ -226,6 +235,11 @@ type Query {
 
   """단일 분류 정보 조회"""
   fetchCategoryByTree(categoryID: String!): ProductCategoryEntity!
+}
+
+input PhoneInput {
+  phone: String!
+  token: String!
 }
 
 type Mutation {
@@ -361,6 +375,9 @@ input CreateUserInput {
 
   """이메일"""
   email: String!
+
+  """핸드폰 번호"""
+  phone: String!
 
   """비밀번호"""
   pwd: String!

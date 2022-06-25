@@ -4,16 +4,20 @@ export const MESSAGES = {
     UNVLIAD_ACCESS: '잘못된 접근입니다.',
 
     ///////////////////////////////////////////////////////////////////
-    // 결제 //
-    PAYMENT_OVERLAP_UID: '중복된 값입니다.',
-    PAYMENT_UNVALID: '결제 정보를 찾을 수 없습니다.',
-    PAYMENT_ALREADY_CANCEL: '이미 취소된 결제입니다.',
+    // 회원 //
+
+    USER_OVERLAP_PHONE: '이미 인증이 완료된 번호입니다.',
+    USER_UNVALID_PHONE: '존재하지 않는 번호입니다.',
+
+    USER_OVERLAP_EMAIL: '중복된 이메일입니다.',
+    USER_UNVALID_EMAIL: '존재하지 않는 이메일입니다.',
+    USER_ALREADY_EMAIL: '이미 인증이 완료된 이메일입니다.',
+    USER_SUCCESS_EMAIL: '인증이 완료되었습니다.',
 
     ///////////////////////////////////////////////////////////////////
     // 회원 //
     USER_COMPARE_PWD_FAILED: '비밀번호가 다릅니다.',
     USER_FIND_ONE_FAILED: '회원 정보를 찾을 수 없습니다.',
-    USER_OVERLAP_EMAIL: '중복된 이메일입니다.',
     USER_ALREADY_LOGIN: '이미 로그인된 회원입니다.',
     USER_ALREADY_LOGOUT: '이미 로그아웃된 회원입니다.',
 
@@ -80,7 +84,9 @@ export const MESSAGES = {
 
     ///////////////////////////////////////////////////////////////////
     // 결제 //
-    PAYMENT_FIND_ONE_FAILED: '결제 정보를 찾을 수 없습니다.',
+    PAYMENT_UNVALID: '결제 정보를 찾을 수 없습니다.',
+    PAYMENT_OVERLAP_UID: '중복된 값입니다.',
+    PAYMENT_ALREADY_CANCEL: '이미 취소된 결제입니다.',
 
     PAYMENT_RESTORE_SUCCESSED: 'Completed Payment Restore',
     PAYMENT_RESTORE_FAILED: 'Failed Payment Restore',
@@ -110,11 +116,6 @@ export const MESSAGES = {
 
     PRODUCT_SOFT_DELETE_SUCCESSED: 'Completed Product Soft Delete',
     PRODUCT_SOFT_DELETE_FAILED: 'Failed Product Soft Delete',
-
-    ///////////////////////////////////////////////////////////////////
-    // 검색용 카테고리 //
-    CATEGORY_SEARCH_FIND_ONE_FAILED: '카테고리를 찾을 수 없습니다.',
-    CATEGORY_SEARCH_CREATE: 'Completed Create Category',
 
     ///////////////////////////////////////////////////////////////////
     // Category Trees //

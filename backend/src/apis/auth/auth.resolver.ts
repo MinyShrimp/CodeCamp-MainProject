@@ -10,7 +10,7 @@ import {
     GqlJwtRefreshGuard,
 } from '../../commons/auth/gql-auth.guard';
 
-import { LoginInput } from './dto/Login.input';
+import { LoginInput } from './dto/login.input';
 
 import { AuthService } from './auth.service';
 
@@ -20,7 +20,7 @@ export class AuthResolver {
     constructor(
         @Inject(CACHE_MANAGER)
         private readonly cacheManage: Cache,
-        private readonly authService: AuthService, //
+        private readonly authService: AuthService,
     ) {}
 
     ///////////////////////////////////////////////////////////////////

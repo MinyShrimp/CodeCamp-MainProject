@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { Button } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
 import { CardStyle, Container } from '../style';
-import { AttachMoney, Email, Forward } from '@material-ui/icons';
+import { AttachMoney, Email, Forward, PhoneIphone } from '@material-ui/icons';
 import { Subtitle } from '../style';
 
 interface IUserInfo {
     id: string;
     email: string;
     name: string;
+    phone: string;
     point: number;
 }
 
@@ -21,6 +22,7 @@ export function LogicLogoutIndex() {
         email: '',
         name: '',
         point: 0,
+        phone: '',
     });
 
     const submit = async () => {
@@ -50,7 +52,7 @@ export function LogicLogoutIndex() {
         }
 
         const { data, message } = await sendGraphQL({
-            query: `query { fetchLoginUser { id, name, email, point } }`,
+            query: `query { fetchLoginUser { id, name, email, point, phone } }`,
             header: {
                 Authorization: `Bearer ${token}`,
             },
@@ -92,6 +94,13 @@ export function LogicLogoutIndex() {
                                 fontSize="small"
                             />{' '}
                             {info.email}
+                        </Subtitle>
+                        <Subtitle>
+                            <PhoneIphone
+                                style={{ marginRight: '0.5rem' }}
+                                fontSize="small"
+                            />{' '}
+                            {info.phone}
                         </Subtitle>
                         <Subtitle>
                             <AttachMoney

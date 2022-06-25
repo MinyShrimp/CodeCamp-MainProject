@@ -26,6 +26,9 @@ yarn add cache-manager cache-manager-redis-store redis
 yarn add @types/cache-manager @types/cache-manager-redis-store --dev
 
 yarn add @nestjs/elasticsearch @elastic/elasticsearch
+
+yarn add nodemailer coolsms-node-sdk
+yarn add -D @types/nodemailer
 ```
 
 ## 설정

@@ -14,6 +14,7 @@ export class UserAdminRepository {
         'user.id',
         'user.name',
         'user.email',
+        'user.phone',
         'user.point',
         'user.loginAt',
         'user.logoutAt',
@@ -21,6 +22,10 @@ export class UserAdminRepository {
         'user.createAt',
         'user.updateAt',
         'user.deleteAt',
+        'phone.id',
+        'phone.phone',
+        'email.id',
+        'email.isAuth',
     ];
 
     async findAll(): Promise<UserEntity[]> {
@@ -28,6 +33,8 @@ export class UserAdminRepository {
             .createQueryBuilder('user')
             .select(this._selector)
             .withDeleted()
+            .leftJoin('user.phoneAuth', 'phone')
+            .leftJoin('user.emailAuth', 'email')
             .orderBy('user.createAt')
             .getMany();
     }
@@ -58,6 +65,8 @@ export class UserAdminRepository {
             .select([...this._selector, 'user.pwd', 'user.isAdmin'])
             .withDeleted()
             .where('user.id=:id', { id: userID })
+            .leftJoin('user.phoneAuth', 'phone')
+            .leftJoin('user.emailAuth', 'email')
             .orderBy('user.createAt')
             .getOne();
     }

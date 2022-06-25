@@ -1,8 +1,9 @@
-import { Button, Input, Typography } from '@material-ui/core';
+import { Button, Input, MenuItem, Select, Typography } from '@material-ui/core';
 import { BatteryAlert } from '@material-ui/icons';
 import { useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { v4 } from 'uuid';
 import { LogicHeader } from '../header';
 import { sendGraphQL } from '../sendGraphQL';
 import {
@@ -11,24 +12,61 @@ import {
     CardStyle,
     Container,
     InputGroup,
+    InputItemBetween,
+    InputNumber,
     Label,
+    Timer,
 } from '../style';
+import { TimerComponent } from '../timer';
+
+interface IRegisterInput {
+    name: string;
+    email: string;
+    phone: Array<string>;
+    pwd: string;
+    pwdAgain: string;
+}
 
 export function LogicRegisterIndex() {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMsg, setAlertMsg] = useState<string>('');
     const navi = useNavigate();
 
-    const input = useRef<{ email: string; pwd: string; name: string }>({
-        email: '',
-        pwd: '',
+    // prettier-ignore
+    const phoneNumbers = [
+        '010', '011', '012', '013', '014', '015', '016', '017', '018', '019'
+    ];
+
+    const input = useRef<IRegisterInput>({
         name: '',
+        email: '',
+        phone: ['010', '', ''],
+        pwd: '',
+        pwdAgain: '',
     });
 
+    const phoneToken = useRef<string>('');
+    const [isAuthSend, setIsAuthSend] = useState<boolean>(false);
+    const [clickFlag, setClickFlag] = useState<boolean>(false);
+    const [isAuthOK, setIsAuthOK] = useState<boolean>(false);
+
     const submit = async () => {
+        if (input.current.pwd !== input.current.pwdAgain) {
+            setShowAlert(true);
+            setAlertMsg('비밀번호가 서로 다릅니다');
+            return;
+        }
+
+        if (!isAuthOK) {
+            setShowAlert(true);
+            setAlertMsg('핸드폰 인증이 완료되지 않았습니다.');
+            return;
+        }
+
         try {
+            const phone = input.current.phone.join('');
             const { data, message } = await sendGraphQL({
-                query: `mutation { createUser( createUserInput: { name: "${input.current.name}", email: "${input.current.email}", pwd: "${input.current.pwd}" } ) { id } }`,
+                query: `mutation { createUser( createUserInput: { name: "${input.current.name}", email: "${input.current.email}", pwd: "${input.current.pwd}", phone: "${phone}" } ) { id } }`,
             });
 
             if (data) {
@@ -36,6 +74,38 @@ export function LogicRegisterIndex() {
             } else {
                 setShowAlert(true);
                 setAlertMsg(message as string);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const authPhone = async () => {
+        try {
+            const phone = input.current.phone.join('');
+            const { data, message } = await sendGraphQL({
+                query: `query { SendPhone( phone: "${phone}" ) }`,
+            });
+            console.log(data, message);
+
+            if (data) {
+                setClickFlag(!clickFlag);
+                setIsAuthSend(true);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const authPhoneOK = async () => {
+        try {
+            const phone = input.current.phone.join('');
+            const { data, message } = await sendGraphQL({
+                query: `query { AuthPhoneOK( phoneInput: { phone: "${phone}", token: "${phoneToken.current}" } ) }`,
+            });
+            console.log(data, message);
+            if (data) {
+                setIsAuthOK(true);
             }
         } catch (e) {
             console.log(e);
@@ -80,7 +150,6 @@ export function LogicRegisterIndex() {
                             <Input
                                 style={{ width: '100%' }}
                                 id="name"
-                                name="name"
                                 onChange={(e) => {
                                     input.current.name = e.target.value;
                                 }}
@@ -91,14 +160,102 @@ export function LogicRegisterIndex() {
                                 <Typography>Email</Typography>
                             </Label>
                             <Input
-                                style={{ width: '100%' }}
+                                style={{
+                                    width: '100%',
+                                    marginRight: '1rem',
+                                }}
                                 id="email"
-                                name="email"
                                 type="email"
                                 onChange={(e) => {
                                     input.current.email = e.target.value;
                                 }}
                             />
+                        </InputGroup>
+                        <InputGroup>
+                            <Label htmlFor="phone1">
+                                <Typography>Phone</Typography>
+                            </Label>
+                            <InputItemBetween>
+                                <InputItemBetween>
+                                    <Select
+                                        style={{
+                                            width: '100%',
+                                            marginRight: '1rem',
+                                        }}
+                                        id="phone1"
+                                        defaultValue={'010'}
+                                        onChange={(e) => {
+                                            input.current.phone[0] = e.target
+                                                .value as string;
+                                        }}
+                                        disabled={isAuthOK}
+                                    >
+                                        {phoneNumbers.map((v, i) => {
+                                            return (
+                                                <MenuItem value={v} key={v4()}>
+                                                    {' '}
+                                                    {v}{' '}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </Select>
+                                    <InputNumber
+                                        id="phone2"
+                                        type="number"
+                                        onChange={(e) => {
+                                            input.current.phone[1] =
+                                                e.target.value;
+                                        }}
+                                        disabled={isAuthOK}
+                                    />
+                                    <InputNumber
+                                        id="phone3"
+                                        type="number"
+                                        onChange={(e) => {
+                                            input.current.phone[2] =
+                                                e.target.value;
+                                        }}
+                                        disabled={isAuthOK}
+                                    />
+                                </InputItemBetween>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={authPhone}
+                                    disabled={isAuthOK}
+                                >
+                                    인증
+                                </Button>
+                            </InputItemBetween>
+                        </InputGroup>
+                        <InputGroup>
+                            <InputItemBetween>
+                                <InputNumber
+                                    id="phone-auth"
+                                    type="number"
+                                    onChange={(e) => {
+                                        phoneToken.current = e.target.value;
+                                    }}
+                                    disabled={isAuthOK || !isAuthSend}
+                                />
+                                <TimerComponent
+                                    isStart={clickFlag}
+                                    isSend={isAuthSend}
+                                    isAuthOK={isAuthOK}
+                                    setIsSend={setIsAuthSend}
+                                    callBack={() => {
+                                        setIsAuthSend(false);
+                                    }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={authPhoneOK}
+                                    disabled={isAuthOK || !isAuthSend}
+                                >
+                                    확인
+                                </Button>
+                            </InputItemBetween>
                         </InputGroup>
                         <InputGroup>
                             <Label htmlFor="pwd">
@@ -107,10 +264,22 @@ export function LogicRegisterIndex() {
                             <Input
                                 style={{ width: '100%' }}
                                 id="pwd"
-                                name="pwd"
                                 type="password"
                                 onChange={(e) => {
                                     input.current.pwd = e.target.value;
+                                }}
+                            />
+                        </InputGroup>
+                        <InputGroup>
+                            <Label htmlFor="pwd-again">
+                                <Typography>Password Again</Typography>
+                            </Label>
+                            <Input
+                                style={{ width: '100%' }}
+                                id="pwd-again"
+                                type="password"
+                                onChange={(e) => {
+                                    input.current.pwdAgain = e.target.value;
                                 }}
                             />
                         </InputGroup>
