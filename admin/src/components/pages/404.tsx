@@ -1,6 +1,6 @@
-import React from 'react';
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+// @ts-ignore
 import Img_404 from '../../assets/img/error-404-monochrome.svg';
 import { Page_Container } from '../styles/styled';
 

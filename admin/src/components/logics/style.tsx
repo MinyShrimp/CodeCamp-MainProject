@@ -44,7 +44,7 @@ export const CardBody = styled.div`
 
 export const CardFooter = styled.div`
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 `;
 
 export const Subtitle = styled.p`
@@ -60,6 +60,4 @@ export const Timer = styled.div`
     align-items: center;
     justify-content: center;
     margin-right: 1rem;
-
-    color: blue;
 `;
