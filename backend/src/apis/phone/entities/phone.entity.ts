@@ -5,6 +5,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,13 +16,17 @@ export class PhoneEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ unique: true })
-    @Field(() => String)
+    @Column({ nullable: true })
+    @Field(() => String, { nullable: true })
     phone: string;
 
-    @Column()
-    @Field(() => String)
+    @Column({ nullable: true })
+    @Field(() => String, { nullable: true })
     token: string;
+
+    @Column({ default: false })
+    @Field(() => Boolean)
+    isAuth: boolean;
 
     @CreateDateColumn()
     createAt: Date;
@@ -31,5 +36,6 @@ export class PhoneEntity extends BaseEntity {
         (user) => user.phoneAuth,
         { cascade: true, onDelete: 'CASCADE' },
     )
+    @JoinColumn()
     user: UserEntity;
 }

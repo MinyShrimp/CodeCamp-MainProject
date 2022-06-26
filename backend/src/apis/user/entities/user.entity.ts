@@ -36,8 +36,8 @@ export class UserEntity {
     email: string;
 
     // 핸드폰 번호
-    @Column()
-    @Field(() => String, { description: '핸드폰 번호' })
+    @Column({ nullable: true })
+    @Field(() => String, { description: '핸드폰 번호', nullable: true })
     phone: string;
 
     // 비밀번호
@@ -80,13 +80,11 @@ export class UserEntity {
         () => PhoneEntity, //
         (phone) => phone.user,
     )
-    @JoinColumn({ name: 'phoneAuthId' })
     phoneAuth: PhoneEntity;
 
     @OneToOne(
         () => EmailEntity, //
         (email) => email.user,
     )
-    @JoinColumn({ name: 'emailAuthId' })
     emailAuth: EmailEntity;
 }

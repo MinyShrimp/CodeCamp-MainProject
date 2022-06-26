@@ -29,12 +29,10 @@ export class EmailRepository {
             .getOne();
     }
 
-    async create(
-        emailDTO: EmailDto, //
+    async save(
+        email: Partial<EmailEntity>, //
     ): Promise<EmailEntity> {
-        return await this.emailRepository.save({
-            ...emailDTO,
-        });
+        return await this.emailRepository.save(email);
     }
 
     async auth(

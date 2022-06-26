@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { BatteryAlert } from '@material-ui/icons';
 import { Button, IconButton, Input, Typography } from '@material-ui/core';
@@ -21,7 +21,6 @@ import imgGoogle from '../../../assets/img/google.png';
 import imgKakao from '../../../assets/img/kakao.png';
 // @ts-ignore
 import imgNaver from '../../../assets/img/naver.png';
-import axios from 'axios';
 
 export function LogicLoginIndex() {
     const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -32,6 +31,13 @@ export function LogicLoginIndex() {
         email: '',
         pwd: '',
     });
+
+    useEffect(() => {
+        if (localStorage.getItem('access_token')) {
+            navi('/admin/logic/logout');
+        }
+        return () => {};
+    }, []);
 
     const submit = async () => {
         try {

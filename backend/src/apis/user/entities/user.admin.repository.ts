@@ -23,7 +23,7 @@ export class UserAdminRepository {
         'user.updateAt',
         'user.deleteAt',
         'phone.id',
-        'phone.phone',
+        'phone.isAuth',
         'email.id',
         'email.isAuth',
     ];

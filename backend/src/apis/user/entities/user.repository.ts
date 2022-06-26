@@ -50,6 +50,12 @@ export class UserRepository {
     ///////////////////////////////////////////////////////////////////
     // 생성 //
 
+    create(
+        entity: Partial<UserEntity>, //
+    ): UserEntity {
+        return this.userRepository.create(entity);
+    }
+
     async save(
         entity: Partial<UserEntity>, //
     ): Promise<UserEntity> {

@@ -1,25 +1,14 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { EmailIndex } from './email';
+import { LoginIndex } from './login';
+import { TokenIndex } from './token';
 
 export function AuthIndex() {
-    const [resultMsg, setResultMsg] = useState<string>('');
-
-    useEffect(() => {
-        const query = new URLSearchParams(location.search);
-        const token = query.get('token');
-        if (token === null) {
-            return;
-        }
-        console.log(token);
-
-        axios
-            .get(`${process.env.BE_URL}/auth/email?token=${token}`)
-            .then((res) => {
-                setResultMsg(res.data);
-            });
-
-        return () => {};
-    }, []);
-
-    return <>{resultMsg}</>;
+    return (
+        <Routes>
+            <Route path="/email" element={<EmailIndex />} />
+            <Route path="/token" element={<TokenIndex />} />
+            <Route path="/login" element={<LoginIndex />} />
+        </Routes>
+    );
 }

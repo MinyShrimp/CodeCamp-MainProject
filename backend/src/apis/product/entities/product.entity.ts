@@ -95,10 +95,7 @@ export class ProductEntity extends BaseEntity {
     // 상품 카테고리
     // M:1
     @JoinColumn({ name: 'productCategoryId' })
-    @ManyToOne(() => ProductCategoryEntity, {
-        cascade: true,
-        onDelete: 'CASCADE',
-    })
+    @ManyToOne(() => ProductCategoryEntity)
     @Field(() => ProductCategoryEntity, { nullable: true })
     productCategory: ProductCategoryEntity;
 
@@ -108,10 +105,7 @@ export class ProductEntity extends BaseEntity {
     // 상품 태그
     // M:N
     @JoinTable()
-    @ManyToMany(() => ProductTagEntity, (productTags) => productTags.products, {
-        cascade: true,
-        onDelete: 'CASCADE',
-    })
+    @ManyToMany(() => ProductTagEntity, (productTags) => productTags.products)
     @Field(() => [ProductTagEntity])
     productTags: Array<ProductTagEntity>;
 }

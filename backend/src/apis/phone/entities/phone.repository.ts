@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PhoneInput } from '../dto/phone.input';
 import { PhoneEntity } from './phone.entity';
 
 @Injectable()
@@ -21,11 +20,9 @@ export class PhoneRepository {
             .getOne();
     }
 
-    async create(
-        phoneInput: PhoneInput, //
+    async save(
+        phone: Partial<PhoneEntity>, //
     ): Promise<PhoneEntity> {
-        return await this.phoneRepository.save({
-            ...phoneInput,
-        });
+        return await this.phoneRepository.save(phone);
     }
 }

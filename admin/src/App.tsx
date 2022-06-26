@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { Index } from './components/index/index';
-import { LoginPage } from './components/login/index';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
-import { Page404 } from './components/pages/404';
-import { AuthIndex } from './components/auth';
+
+import { Index } from './components/index';
+import { LoginPage } from './components/login';
 
 function App() {
     const navigate = useNavigate();
@@ -37,10 +36,8 @@ function App() {
     return (
         <div className="App" style={{ height: '100vh' }}>
             <Routes>
-                <Route path="/auth/email" element={<AuthIndex />}></Route>
-                <Route path="/admin/login" element={<LoginPage />}></Route>
-                <Route path="/admin/*" element={<Index />}></Route>
-                <Route path="*" element={<Page404 />}></Route>
+                <Route path="/login" element={<LoginPage />}></Route>
+                <Route path="/*" element={<Index />}></Route>
             </Routes>
         </div>
     );

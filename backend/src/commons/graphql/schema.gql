@@ -13,7 +13,7 @@ type UserEntity {
   email: String!
 
   """핸드폰 번호"""
-  phone: String!
+  phone: String
 
   """포인트"""
   point: Int!
@@ -238,13 +238,16 @@ type Query {
 }
 
 input PhoneInput {
-  phone: String!
-  token: String!
+  phone: String
+  token: String
 }
 
 type Mutation {
   """AccessToken 재발급"""
   restoreToken: String!
+
+  """OAuth 로그인"""
+  LoginOAuth: String!
 
   """로그인, Get AccessToken"""
   Login(loginInput: LoginInput!): String!
@@ -377,7 +380,7 @@ input CreateUserInput {
   email: String!
 
   """핸드폰 번호"""
-  phone: String!
+  phone: String
 
   """비밀번호"""
   pwd: String!

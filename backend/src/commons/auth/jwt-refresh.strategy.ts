@@ -31,14 +31,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
         req: Request, //
         payload: IPayloadSub,
     ): Promise<IPayload> {
-        const access_token = req.headers.authorization.split(' ')[1];
         const refresh_token = getRefreshTokenInCookie(req);
 
-        if (!refresh_token || !access_token) {
+        if (!refresh_token) {
             throw new UnauthorizedException();
         }
-
-        const access_jwt = decode(access_token) as IPayloadSub;
 
         const refresh_cache = await this.cacheManager.get(
             `blacklist:refresh_token:${refresh_token}`,
@@ -54,8 +51,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
             name: payload.name,
             email: payload.email,
             isAdmin: payload.isAdmin ?? false,
-            access_exp: access_jwt.exp - access_jwt.iat,
-            access_token: access_token,
+            access_exp: 0,
+            access_token: '',
             refresh_exp: payload.exp - payload.iat,
             refresh_token: refresh_token,
         };
