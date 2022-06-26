@@ -45,11 +45,8 @@ export function LogicLogoutIndex() {
         }
     };
 
-    const getLoginUser = async () => {
-        const token = localStorage.getItem('access_token');
-        if (token === null) {
-            return;
-        }
+    const getLoginUser = async (): Promise<void> => {
+        const token = localStorage.getItem('access_token') ?? '';
 
         const { data, message } = await sendGraphQL({
             query: `query { fetchLoginUser { id, name, email, point, phone } }`,
@@ -57,11 +54,16 @@ export function LogicLogoutIndex() {
                 Authorization: `Bearer ${token}`,
             },
         });
+        console.log(data, message);
 
         if (data) {
-            setInfo(data.fetchLoginUser);
-        } else {
+            if (data.fetchLoginUser) {
+                setInfo(data.fetchLoginUser);
+                return;
+            }
         }
+
+        navi('/auth/token');
     };
 
     useEffect(() => {

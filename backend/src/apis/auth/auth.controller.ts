@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { randomUUID } from 'crypto';
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { IUser } from '../../commons/interfaces/User.interface';
@@ -8,6 +8,9 @@ import { IUser } from '../../commons/interfaces/User.interface';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { UserRepository } from '../user/entities/user.repository';
+import { GqlJwtAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { CurrentUser } from 'src/commons/auth/gql-user.param';
+import { IPayload } from 'src/commons/interfaces/Payload.interface';
 
 interface IOAuthRequest extends Request {
     user: IUser;
@@ -15,7 +18,7 @@ interface IOAuthRequest extends Request {
 
 @Controller()
 export class AuthController {
-    private readonly REDIRECT = `${process.env.FE_URL}/admin/entity/user`;
+    private readonly REDIRECT = `${process.env.FE_URL}/auth/token`;
 
     constructor(
         private readonly userRepository: UserRepository,
@@ -38,12 +41,7 @@ export class AuthController {
         // 1-1. 이미 가입되어 있으면 통과
         // 1-2. 가입이 안되어 있으면 회원가입
         if (!user) {
-            user = await this.userRepository.save({
-                email: userInfo.email,
-                name: userInfo.name,
-                pwd: randomUUID(), // DB에 저장하는 비밀번호를 랜덤한 uuid로 저장한다
-                phone: '',
-            });
+            user = await this.userService.createUserOAuth(userInfo);
         }
 
         // 2. 로그인

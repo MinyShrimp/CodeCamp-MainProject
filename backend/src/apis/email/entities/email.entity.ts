@@ -3,6 +3,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -35,5 +36,6 @@ export class EmailEntity extends BaseEntity {
         (user) => user.email,
         { cascade: true, onDelete: 'CASCADE' },
     )
+    @JoinColumn()
     user: UserEntity;
 }

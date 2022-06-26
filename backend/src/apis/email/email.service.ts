@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { MESSAGES } from 'src/commons/message/Message.enum';
 import { ResultMessage } from 'src/commons/message/ResultMessage.dto';
 import { EmailUtil } from 'src/commons/utils/email.util';
+import { UserEntity } from '../user/entities/user.entity';
 import { EmailDto } from './dto/email.dto';
 import { EmailEntity } from './entities/email.entity';
 import { EmailRepository } from './entities/email.repository';
@@ -37,6 +38,7 @@ export class EmailService {
 
     async SendAuthEmail(
         emailDto: EmailDto, //
+        user: UserEntity,
     ): Promise<EmailEntity> {
         // 이메일 중복 체크
         await this.isOverlapEmail(emailDto.email);
@@ -46,7 +48,10 @@ export class EmailService {
             emailDto.token,
         );
         if (result) {
-            return await this.emailRepository.create(emailDto);
+            return await this.emailRepository.save({
+                ...emailDto,
+                user: user,
+            });
         } else {
             throw new ConflictException(MESSAGES.UNVLIAD_ACCESS);
         }

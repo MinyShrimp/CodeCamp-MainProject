@@ -19,6 +19,8 @@ import { UpdateUserInput } from './dto/updateUser.input';
 import { UserEntity } from './entities/user.entity';
 import { UserRepository } from './entities/user.repository';
 import { UserCheckService } from './userCheck.service';
+import { IUser } from 'src/commons/interfaces/User.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -67,23 +69,64 @@ export class UserService {
         // 이메일 중복 체크
         this.userCheckService.checkOverlapEmail(user);
 
+        const newUser = this.userRepository.create({
+            ...input,
+            pwd: this.createPassword(input.pwd),
+        });
+
         // 핸드폰 인증 체크
-        const phoneAuth = await this.phoneService.create(input.phone);
+        const phoneAuth = await this.phoneService.create(input.phone, newUser);
 
         // 이메일 인증 보내기
         const token = this.createPassword(input.email);
-        const emailAuth = await this.emailService.SendAuthEmail({
-            email: input.email,
-            token: token,
-        });
+        const emailAuth = await this.emailService.SendAuthEmail(
+            {
+                email: input.email,
+                token: token,
+            },
+            newUser,
+        );
+
+        newUser.phoneAuth = phoneAuth;
+        newUser.emailAuth = emailAuth;
 
         // 비밀번호 해싱 후 생성
-        const result = await this.userRepository.save({
-            ...input,
-            pwd: this.createPassword(input.pwd),
-            phoneAuth: phoneAuth,
-            emailAuth: emailAuth,
+        return await this.userRepository.save(newUser);
+    }
+
+    async createUserOAuth(
+        userInfo: IUser, //
+    ): Promise<UserEntity> {
+        // 검색
+        const user = await this.userRepository.findOneByEmail(userInfo.email);
+
+        // 이메일 중복 체크
+        this.userCheckService.checkOverlapEmail(user);
+
+        const newUser = this.userRepository.create({
+            ...userInfo,
+            phone: null,
+            pwd: this.createPassword(randomUUID()),
         });
+
+        // 핸드폰 인증 체크
+        const phoneAuth = await this.phoneService.createOAuth();
+
+        // 이메일 인증 보내기
+        const token = this.createPassword(userInfo.email);
+        const emailAuth = await this.emailService.SendAuthEmail(
+            {
+                email: userInfo.email,
+                token: token,
+            },
+            newUser,
+        );
+
+        newUser.phoneAuth = phoneAuth;
+        newUser.emailAuth = emailAuth;
+
+        // 회원가입
+        const result = await this.userRepository.save(newUser);
 
         return result;
     }

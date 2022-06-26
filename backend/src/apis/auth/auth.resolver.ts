@@ -57,6 +57,17 @@ export class AuthResolver {
     ///////////////////////////////////////////////////////////////////
     // 수정 //
 
+    @Mutation(
+        () => String, //
+        { description: 'OAuth 로그인' },
+    )
+    @UseGuards(GqlJwtAccessGuard)
+    async LoginOAuth(
+        @CurrentUser() currentUser: IPayload, //
+    ) {
+        return await this.authService.OAuthLogin(currentUser.id);
+    }
+
     /**
      * POST /api/login
      * @param input

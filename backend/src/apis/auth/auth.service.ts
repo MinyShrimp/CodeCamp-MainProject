@@ -128,6 +128,13 @@ export class AuthService {
     ///////////////////////////////////////////////////////////////////
     // 인증 //
 
+    async OAuthLogin(
+        userID: string, //
+    ) {
+        const result = await this.userRepository.login(userID);
+        return result.affected ? true : false;
+    }
+
     /**
      * 로그인
      * @param context
