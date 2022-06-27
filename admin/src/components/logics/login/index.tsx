@@ -66,14 +66,9 @@ export function LogicLoginIndex() {
             <LogicHeader entityName="Login" />
             <Container>
                 <CardStyle>
-                    <Typography
-                        variant="h3"
-                        className="mb-3"
-                        style={{ textAlign: 'center' }}
-                    >
-                        {' '}
-                        Login{' '}
-                    </Typography>
+                    <h1 className="mb-3" style={{ textAlign: 'center' }}>
+                        Login
+                    </h1>
                     <CardBody>
                         {showAlert ? (
                             <Alert

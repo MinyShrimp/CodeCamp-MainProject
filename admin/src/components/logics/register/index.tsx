@@ -117,14 +117,9 @@ export function LogicRegisterIndex() {
             <LogicHeader entityName="Register" />
             <Container>
                 <CardStyle>
-                    <Typography
-                        variant="h3"
-                        className="mb-3"
-                        style={{ textAlign: 'center' }}
-                    >
-                        {' '}
-                        Register{' '}
-                    </Typography>
+                    <h1 className="mb-3" style={{ textAlign: 'center' }}>
+                        Register
+                    </h1>
                     <CardBody>
                         {showAlert ? (
                             <Alert

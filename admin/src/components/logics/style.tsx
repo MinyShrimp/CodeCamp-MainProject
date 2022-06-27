@@ -7,6 +7,7 @@ export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 `;
 
 export const InputGroup = styled.div`
@@ -29,6 +30,10 @@ export const Label = styled.label`
     margin-bottom: 1rem;
 `;
 
+export const ProductCardStyle = styled(Card)`
+    padding: 1rem;
+`;
+
 export const CardStyle = styled(Card)`
     width: 600px;
     height: auto;
@@ -39,7 +44,6 @@ export const CardBody = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: 80%;
 `;
 
 export const CardFooter = styled.div`

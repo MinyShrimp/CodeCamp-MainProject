@@ -18,3 +18,7 @@ export const getDefaultDate = (() => {
     const date = new Date('1997-01-01 00:00:00');
     return () => date;
 })();
+
+export function numberWithCommas(x: number) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

@@ -88,6 +88,12 @@ export function IndexBodySide() {
                                     >
                                         Forgot Password
                                     </Nav.Link>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/admin/logic/product"
+                                    >
+                                        Product
+                                    </Nav.Link>
                                 </>
                             }
                         ></NavCollapse>
