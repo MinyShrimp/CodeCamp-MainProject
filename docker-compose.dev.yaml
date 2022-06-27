@@ -6,7 +6,7 @@ services:
         platform: linux/x86_64
         image: mysql:5.7
         container_name: codecamp-mainproject-db
-        env_file: ./backend/.env.prod
+        env_file: ./backend/.env.dev
         volumes:
             - ./db/conf.d:/etc/mysql/conf.d
         ports:
@@ -55,48 +55,48 @@ services:
             - 80:3000
 
         # 환경 변수 설정
-        env_file: ./backend/.env.prod
+        env_file: ./backend/.env.dev
 
         volumes:
-            - ./backend/.env.prod:/app/.env
+            - ./backend/.env.dev:/app/.env
 
         # 재시작 설정
         restart: always
 
-    # # Admin
-    # api-admin:
-    #     # Dockerfile 설정
-    #     build:
-    #         # Dockerfile의 위치
-    #         context: ./admin
-    #         dockerfile: Dockerfile
+    # Admin
+    api-admin:
+        # Dockerfile 설정
+        build:
+            # Dockerfile의 위치
+            context: ./admin
+            dockerfile: Dockerfile
 
-    #     container_name: codecamp-mainproject-api-admin
+        container_name: codecamp-mainproject-api-admin
 
-    #     # Container Port 연결
-    #     #   - host:container
-    #     ports:
-    #         - 3002:3002
+        # Container Port 연결
+        #   - host:container
+        ports:
+            - 8081:8081
 
-    #     # Volume Mount
-    #     #   - host:container
-    #     volumes:
-    #         - ./admin/src:/app/src
-    #         - ./admin/test:/app/test
-    #         - ./admin/build:/app/build
+        # Volume Mount
+        #   - host:container
+        volumes:
+            - ./admin/src:/app/src
+            - ./admin/test:/app/test
+            - ./admin/build:/app/build
 
-    #         - ./admin/package.json:/app/package.json
-    #         - ./admin/yarn.lock:/app/yarn.lock
-    #         - ./admin/tsconfig.build.json:/app/tsconfig.build.json
-    #         - ./admin/tsconfig.json:/app/tsconfig.json
-    #         - ./admin/.babelrc:/app/.babelrc
-    #         - ./admin/webpack.config.js:/app/webpack.config.js
-    #         - ./admin/.env:/app/.env
+            - ./admin/package.json:/app/package.json
+            - ./admin/yarn.lock:/app/yarn.lock
+            - ./admin/tsconfig.build.json:/app/tsconfig.build.json
+            - ./admin/tsconfig.json:/app/tsconfig.json
+            - ./admin/.babelrc:/app/.babelrc
+            - ./admin/webpack.config.js:/app/webpack.config.js
+            - ./admin/.env.dev:/app/.env
 
-    #         - ./admin/node_modules:/app/node_modules
+            - ./admin/node_modules:/app/node_modules
 
-    #     # 환경 변수 설정
-    #     env_file: ./admin/.env
+        # 환경 변수 설정
+        env_file: ./admin/.env.dev
 
-    #     # 재시작 설정
-    #     restart: always
+        # 재시작 설정
+        restart: always

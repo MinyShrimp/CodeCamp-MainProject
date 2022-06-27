@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+    api-admin:
+        # Dockerfile 설정
+        build:
+            # Dockerfile의 위치
+            context: .
+            dockerfile: Dockerfile
+
+        container_name: codecamp-mainproject-api-admin
+
+        # Container Port 연결
+        #   - host:container
+        ports:
+            - 80:8081
+
+        # Volume Mount
+        #   - host:container
+        volumes:
+            - ./.env.prod:/app/.env
+
+        # 환경 변수 설정
+        env_file: .env.prod
+
+        # 재시작 설정
+        restart: always
