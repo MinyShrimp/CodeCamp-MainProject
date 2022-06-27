@@ -58,7 +58,7 @@ import { FileUploadModule } from './apis/fileUpload/fileUpload.module';
                 return { req, res };
             },
             cors: {
-                origin: ['http://127.0.0.1:8081', 'http://localhost:8081'],
+                origin: [process.env.FE_URL],
                 credentials: 'include',
                 exposedHeaders: ['Authorization', 'Set-Cookie'],
             },
