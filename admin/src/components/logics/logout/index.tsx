@@ -1,4 +1,4 @@
-import { sendGraphQL } from '../sendGraphQL';
+import { sendGraphQL, sendGraphQLWithAuth } from '../sendGraphQL';
 import { LogicHeader } from '../header';
 import { useEffect, useState } from 'react';
 import { Button } from '@material-ui/core';
@@ -26,44 +26,30 @@ export function LogicLogoutIndex() {
     });
 
     const submit = async () => {
-        const token = localStorage.getItem('access_token');
-        if (token === null) {
-            return;
-        }
-
-        const { data, message } = await sendGraphQL({
+        const { status } = await sendGraphQLWithAuth({
             query: `mutation { Logout { id, msg } }`,
-            header: {
-                Authorization: `Bearer ${token}`,
-            },
         });
 
-        if (data) {
+        if (status) {
             localStorage.removeItem('access_token');
             navi('/admin/entity/user');
         } else {
+            navi('/auth/token', { state: '/admin/logic/logout' });
         }
     };
 
     const getLoginUser = async (): Promise<void> => {
-        const token = localStorage.getItem('access_token') ?? '';
-
-        const { data, message } = await sendGraphQL({
+        const { status, data } = await sendGraphQLWithAuth({
             query: `query { fetchLoginUser { id, name, email, point, phone } }`,
-            header: {
-                Authorization: `Bearer ${token}`,
-            },
         });
-        console.log(data, message);
 
-        if (data) {
-            if (data.fetchLoginUser) {
-                setInfo(data.fetchLoginUser);
-                return;
+        if (status) {
+            if (data['fetchLoginUser']) {
+                setInfo(data['fetchLoginUser']);
             }
+        } else {
+            navi('/auth/token', { state: '/admin/logic/logout' });
         }
-
-        navi('/auth/token');
     };
 
     useEffect(() => {
@@ -133,9 +119,3 @@ export function LogicLogoutIndex() {
         </>
     );
 }
-
-// import { LogicFactory } from '../logic_factory';
-
-// export const LogicLogoutIndex = LogicFactory.createIndex({
-//     name: 'Logout',
-// });

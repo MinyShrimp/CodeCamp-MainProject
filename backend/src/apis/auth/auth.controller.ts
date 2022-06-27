@@ -1,6 +1,5 @@
 import { Response } from 'express';
-import { randomUUID } from 'crypto';
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { IUser } from '../../commons/interfaces/User.interface';
@@ -8,9 +7,6 @@ import { IUser } from '../../commons/interfaces/User.interface';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { UserRepository } from '../user/entities/user.repository';
-import { GqlJwtAccessGuard } from 'src/commons/auth/gql-auth.guard';
-import { CurrentUser } from 'src/commons/auth/gql-user.param';
-import { IPayload } from 'src/commons/interfaces/Payload.interface';
 
 interface IOAuthRequest extends Request {
     user: IUser;
@@ -18,7 +14,7 @@ interface IOAuthRequest extends Request {
 
 @Controller()
 export class AuthController {
-    private readonly REDIRECT = `${process.env.FE_URL}/auth/token`;
+    private readonly REDIRECT = `${process.env.FE_URL}/auth/token/oauth`;
 
     constructor(
         private readonly userRepository: UserRepository,

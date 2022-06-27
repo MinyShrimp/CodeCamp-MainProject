@@ -298,9 +298,3 @@ export function LogicRegisterIndex() {
         </>
     );
 }
-
-// import { LogicFactory } from '../logic_factory';
-
-// export const LogicRegisterIndex = LogicFactory.createIndex<any>({
-//     name: 'Register',
-// });

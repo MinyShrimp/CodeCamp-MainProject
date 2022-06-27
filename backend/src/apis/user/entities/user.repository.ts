@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
+import { getNowDate } from 'src/commons/utils/date.util';
 import { UserEntity } from './user.entity';
 
 @Injectable()
@@ -73,7 +74,7 @@ export class UserRepository {
             { id: userID },
             {
                 pwd: pwd,
-                logoutAt: new Date(),
+                logoutAt: getNowDate(),
                 isLogin: false,
             },
         );
@@ -85,7 +86,7 @@ export class UserRepository {
         return await this.userRepository.update(
             { id: userID },
             {
-                loginAt: new Date(),
+                loginAt: getNowDate(),
                 isLogin: true,
             },
         );
@@ -97,7 +98,7 @@ export class UserRepository {
         return await this.userRepository.update(
             { id: userID },
             {
-                logoutAt: new Date(),
+                logoutAt: getNowDate(),
                 isLogin: false,
             },
         );
@@ -118,9 +119,9 @@ export class UserRepository {
         return await this.userRepository.update(
             { id: userID },
             {
-                deleteAt: new Date(),
+                deleteAt: getNowDate(),
                 isLogin: false,
-                logoutAt: new Date(),
+                logoutAt: getNowDate(),
             },
         );
     }
