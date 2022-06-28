@@ -1,36 +1,103 @@
 import { Button, Card } from '@material-ui/core';
-import { useState } from 'react';
-import { v4 } from 'uuid';
+import { useEffect, useState } from 'react';
 import { numberWithCommas } from '../../../functions/functions';
+import { IUserInfo } from '../logout/interface';
+import { sendGraphQLWithAuth } from '../sendGraphQL';
 import { ProductCardStyle, Subtitle } from '../style';
+import { IPaymentInput, IProduct } from './interface';
 
 export function ProductCard(props: {
-    title: string;
-    categorys: Array<string>;
-    price: number;
-    stock_count: number;
-    description: string;
-    publisher: {
-        name: string;
-        description: string;
-    };
-    author: {
-        name: string;
-        description: string;
-    };
+    product: IProduct; //
 }) {
     const [show, setShow] = useState(false);
+    const [user, setUser] = useState<IUserInfo>({
+        id: '',
+        name: '',
+        email: '',
+        phone: null,
+    });
+
+    async function getLoginUser() {
+        const { data, status } = await sendGraphQLWithAuth({
+            query: `query { fetchLoginUser { id, email, name, phone } }`,
+        });
+
+        if (status) {
+            if (data.fetchLoginUser) {
+                setUser(data.fetchLoginUser);
+            }
+        }
+        return status;
+    }
+
+    async function postPayment(
+        rsp: IPaymentInput, //
+    ): Promise<boolean> {
+        console.log(rsp);
+        const { data, status } = await sendGraphQLWithAuth({
+            query: `mutation { 
+                createPayment ( 
+                    createPaymentInput: { 
+                        impUid: "${rsp.imp_uid}",
+                        merchantUid: "${rsp.merchant_uid}",
+                        amount: ${rsp.paid_amount},
+                        status: ${rsp.status},
+                        productID: "${props.product.id}"
+                    } 
+                ) { id } 
+            }`,
+        });
+        return status;
+    }
+
+    useEffect(() => {
+        getLoginUser();
+    }, []);
 
     const payment = async (event: any) => {
         event.cancelBubble = true;
         if (event.stopPropagation) event.stopPropagation();
 
-        console.log('결제');
+        const productID = props.product.id;
+        const accessToken = localStorage.getItem('access_token');
+
+        if (productID === null || accessToken === null) {
+            alert('로그인 후 사용 바랍니다.');
+            return;
+        }
+
+        console.log(user);
+
+        // @ts-ignore
+        const IMP = window.IMP;
+        IMP.init(process.env.IMP_UID);
+        IMP.request_pay(
+            {
+                pg: 'html5_inicis',
+                pay_method: 'card',
+                name: props.product.name,
+                amount: props.product.price,
+                buyer_email: user.email,
+                buyer_name: user.name,
+                buyer_tel: user.phone || '010-2011-5029',
+            },
+            async (rsp: any) => {
+                if (rsp.success) {
+                    await postPayment({
+                        imp_uid: rsp.imp_uid,
+                        merchant_uid: rsp.merchant_uid,
+                        paid_amount: rsp.paid_amount,
+                        status: rsp.status.toUpperCase(),
+                    });
+                } else {
+                    alert(rsp.error_msg);
+                }
+            },
+        );
     };
 
     return (
         <Card
-            key={v4()}
             style={{
                 width: '100%',
                 padding: '1rem',
@@ -49,8 +116,8 @@ export function ProductCard(props: {
                 }}
             >
                 <div>
-                    <h3>{props.title}</h3>
-                    <Subtitle>{props.categorys.join(' > ')}</Subtitle>
+                    <h3>{props.product.name}</h3>
+                    <Subtitle>{props.product.categorys.join(' > ')}</Subtitle>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                     <Button
@@ -61,8 +128,10 @@ export function ProductCard(props: {
                     >
                         구매
                     </Button>
-                    <div>재고량: {numberWithCommas(props.stock_count)}</div>
-                    <div>$ {numberWithCommas(props.price)}</div>
+                    <div>
+                        재고량: {numberWithCommas(props.product.stock_count)}
+                    </div>
+                    <div>$ {numberWithCommas(props.product.price)}</div>
                 </div>
             </div>
 
@@ -71,22 +140,28 @@ export function ProductCard(props: {
                     <hr />
                     <ProductCardStyle>
                         <div style={{ display: 'flex', marginBottom: '1rem' }}>
-                            <ProductCardStyle>
+                            <ProductCardStyle style={{ width: '100%' }}>
                                 <div style={{ color: 'gray' }}>출판사</div>
-                                <h4>{props.publisher.name}</h4>
+                                <h4>{props.product.publisher.name}</h4>
                                 <div>
-                                    {props.publisher.description.slice(0, 100)}
+                                    {props.product.publisher.description.slice(
+                                        0,
+                                        100,
+                                    )}
                                 </div>
                             </ProductCardStyle>
-                            <ProductCardStyle>
+                            <ProductCardStyle style={{ width: '100%' }}>
                                 <div style={{ color: 'gray' }}>저자</div>
-                                <h4>{props.author.name}</h4>
+                                <h4>{props.product.author.name}</h4>
                                 <div>
-                                    {props.author.description.slice(0, 100)}
+                                    {props.product.author.description.slice(
+                                        0,
+                                        100,
+                                    )}
                                 </div>
                             </ProductCardStyle>
                         </div>
-                        <div>{props.description}</div>
+                        <div>{props.product.description}</div>
                     </ProductCardStyle>
                 </>
             ) : (

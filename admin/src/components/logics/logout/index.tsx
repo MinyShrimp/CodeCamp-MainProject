@@ -6,14 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { CardStyle, Container } from '../style';
 import { AttachMoney, Email, Forward, PhoneIphone } from '@material-ui/icons';
 import { Subtitle } from '../style';
-
-interface IUserInfo {
-    id: string;
-    email: string;
-    name: string;
-    phone: string;
-    point: number;
-}
+import { IUserInfo } from './interface';
 
 export function LogicLogoutIndex() {
     const navi = useNavigate();

@@ -26,8 +26,57 @@ export class ProductRepository {
      */
     async findAll(): Promise<ProductEntity[]> {
         return await this.productRepository.find({
-            relations: ['book', 'productCategory', 'productTags'],
+            relations: [
+                'book',
+                'book.publisher',
+                'book.author',
+                'book.book_images',
+                'book.book_images.file',
+                'productCategory',
+                'productCategory.parent',
+                'productCategory.parent.parent',
+                'productCategory.parent.parent.parent',
+                'productTags',
+            ],
+            order: {
+                createAt: 'ASC',
+            },
         });
+    }
+
+    async findListAll(): Promise<ProductEntity[]> {
+        return await this.productRepository
+            .createQueryBuilder('p')
+            .select([
+                'p.id',
+                'p.name',
+                'p.price',
+                'p.stock_count',
+                't.name',
+                'c.name',
+                'cp.name',
+                'cpp.name',
+                'cppp.name',
+                'b.description',
+                'i.isMain',
+                'f.url',
+                'a.name',
+                'a.description',
+                'pb.name',
+                'pb.description',
+            ])
+            .leftJoin('p.productCategory', 'c')
+            .leftJoin('p.productTags', 't')
+            .leftJoin('c.parent', 'cp')
+            .leftJoin('cp.parent', 'cpp')
+            .leftJoin('cpp.parent', 'cppp')
+            .leftJoin('p.book', 'b')
+            .leftJoin('b.author', 'a')
+            .leftJoin('b.publisher', 'pb')
+            .leftJoin('b.book_images', 'i')
+            .leftJoin('i.file', 'f')
+            .orderBy('p.createAt')
+            .getMany();
     }
 
     /**

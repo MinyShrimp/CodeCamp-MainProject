@@ -52,7 +52,7 @@ services:
         # Container Port 연결
         #   - host:container
         ports:
-            - 80:3000
+            - 3000:3000
 
         # 환경 변수 설정
         env_file: ./backend/.env.dev
