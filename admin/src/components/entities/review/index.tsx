@@ -1,7 +1,4 @@
-import React from 'react';
 import { EntityFactory } from '../entity_factory';
-import { DummyProductColumn } from '../product/interface';
-import { DummyUserColumn } from '../user/interface';
 import { IReviewColumn, DummyReviewColumn } from './interface';
 
 // prettier-ignore
