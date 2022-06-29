@@ -15,17 +15,9 @@ import {
     InputItemBetween,
     InputNumber,
     Label,
-    Timer,
 } from '../style';
 import { TimerComponent } from '../timer';
-
-interface IRegisterInput {
-    name: string;
-    email: string;
-    phone: Array<string>;
-    pwd: string;
-    pwdAgain: string;
-}
+import { IRegisterInput } from './interface';
 
 export function LogicRegisterIndex() {
     const [showAlert, setShowAlert] = useState<boolean>(false);

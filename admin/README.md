@@ -1,3 +1,4 @@
+```
 yarn add react react-dom react-query react-router-dom
 yarn add -D webpack webpack-bundle-analyzer webpack-cli webpack-dev-server webpack-merge
 yarn add -D @babel/cli @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript babel-loader
@@ -15,3 +16,4 @@ yarn add -D @types/axios
 
 yarn add @material-ui/core @material-ui/icons
 yarn add dotenv-webpack
+```
