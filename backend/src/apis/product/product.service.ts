@@ -25,7 +25,6 @@ export class ProductService {
         private readonly productCheckService: ProductCheckService,
         private readonly bookService: BookService,
         private readonly productTagsService: ProductTagService,
-        private readonly productCategoryService: ProductCategoryService,
         private readonly productCategoryRepository: ProductCategoryAdminRepository,
     ) {}
 
@@ -37,7 +36,7 @@ export class ProductService {
      * @returns 모든 상품 목록
      */
     async findAll(): Promise<ProductEntity[]> {
-        return await this.productRepository.findAll();
+        return await this.productRepository.findListAll();
     }
 
     /**

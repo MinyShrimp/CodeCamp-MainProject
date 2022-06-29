@@ -26,6 +26,14 @@ export class ProductResolver {
     ///////////////////////////////////////////////////////////////////
     // 조회 //
 
+    @Query(
+        () => [ProductEntity],
+        { description: '모든 상품 목록' }, //
+    )
+    async fetchProducts(): Promise<ProductEntity[]> {
+        return await this.productService.findAll();
+    }
+
     /**
      * GET /api/products
      * @response 상품 검색
@@ -34,7 +42,7 @@ export class ProductResolver {
         () => [ProductEntity], //
         { description: '상품 검색' },
     )
-    async fetchProducts(
+    async searchProducts(
         @Args('search') search: string, //
     ): Promise<ProductEntity[]> {
         // Redis 검사

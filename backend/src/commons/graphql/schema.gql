@@ -135,6 +135,9 @@ type ProductCategoryEntity {
 
   """하위 분류"""
   children: [ProductCategoryEntity!]
+
+  """상위 분류"""
+  parent: ProductCategoryEntity
 }
 
 """상품 Entity"""
@@ -212,8 +215,11 @@ type Query {
   """리뷰 단일 조회"""
   fetchReview(reviewID: String!): ReviewEntity!
 
+  """모든 상품 목록"""
+  fetchProducts: [ProductEntity!]!
+
   """상품 검색"""
-  fetchProducts(search: String!): [ProductEntity!]!
+  searchProducts(search: String!): [ProductEntity!]!
 
   """단일 상품 조회"""
   fetchProduct(productID: String!): ProductEntity

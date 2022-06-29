@@ -10,18 +10,26 @@ export const PaymentIndex = EntityFactory.getEntity<IPaymentColumn>({
         column: [
             'id', 'impUid', 'merchantUid',
             'amount', 'status', 
-            'userId', 'productId',
+            'user', 'product',
             'createAt',
         ],
+        option: {
+            user: 'email',
+            product: 'name'
+        },
         url: '/admin/payments'
     },
     show: {
         column: [
             'id', 'impUid', 'merchantUid',
             'amount', 'status', 
-            'userId', 'productId',
+            'user', 'product',
             'createAt',
         ],
+        option: {
+            user: 'email',
+            product: 'name'
+        },
         url: '/admin/payment'
     },
 });

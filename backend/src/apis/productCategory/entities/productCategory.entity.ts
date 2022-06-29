@@ -40,7 +40,11 @@ export class ProductCategoryEntity extends BaseEntity {
     )
     children: ProductCategoryEntity[];
 
-    @TreeParent({ onDelete: 'CASCADE' })
+    @TreeParent()
+    @Field(() => ProductCategoryEntity, {
+        nullable: true,
+        description: '상위 분류',
+    })
     parent: ProductCategoryEntity;
 
     @CreateDateColumn()
